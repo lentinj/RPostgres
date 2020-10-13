@@ -10,6 +10,18 @@ vignette: >
 
 ```{r, echo = FALSE}
 library(DBI)
+
+# Only run this vignette if PG is available and > 9.5 (Where SKIP LOCKED appears)
+if (RPostgres::postgresHasDefault()) {
+    con <- dbConnect(RPostgres::Postgres())
+    rs <- dbSendQuery(con, "SELECT current_setting('server_version_num')::INT >= 90500")
+    knitr::opts_chunk$set(purl = dbFetch(rs)[1,1])
+    dbClearResult(rs)
+    dbDisconnect(con)
+} else {
+    knitr::opts_chunk$set(purl = FALSE)
+}
+
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 con <- NULL
 rp <- NULL
